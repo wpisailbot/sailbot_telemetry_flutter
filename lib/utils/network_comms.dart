@@ -318,6 +318,7 @@ class NetworkComms {
     RudderCommand command = RudderCommand();
     command.rudderControlValue = angle;
     dev.log("sending rudder command", name: "network");
+    // print(command);
     _controlCommandServiceClient?.executeRudderCommand(command).then((response) {
       ControlExecutionStatus status = response.executionStatus;
       dev.log("Rudder control command returned with response: $status",
@@ -332,6 +333,7 @@ class NetworkComms {
   setTrimtabAngle(double angle) {
     TrimTabCommand command = TrimTabCommand();
     command.trimtabControlValue = angle;
+    // print(command);
     _controlCommandServiceClient?.executeTrimTabCommand(command).then(
         (response) {
       ControlExecutionStatus status = response.executionStatus;
@@ -399,6 +401,7 @@ class NetworkComms {
   setAutonomousMode(AutonomousMode mode) {
     AutonomousModeCommand command = AutonomousModeCommand();
     command.autonomousMode = mode;
+    // print(command);
     _controlCommandServiceClient
         ?.executeAutonomousModeCommand(command)
         .then((response) {

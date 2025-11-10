@@ -28,6 +28,14 @@ class LaunchfileListNotifier extends StateNotifier<List<String>?> {
   }
 }
 
+class MapNameListNotifier extends StateNotifier<List<String>?> {
+  MapNameListNotifier() : super(null);
+
+  void update(List<String>? newState) {
+    state = newState;
+  }
+}
+
 final logProvider = StateNotifierProvider<LogNotifier, List<String>>((ref) {
   return LogNotifier();
 });
@@ -36,6 +44,15 @@ final launchfileListProvider =
     StateNotifierProvider<LaunchfileListNotifier, List<String>?>((ref) {
   return LaunchfileListNotifier();
 });
+
+final mapNameListProvider = StateNotifierProvider<MapNameListNotifier, List<String>?>((ref) {
+  return MapNameListNotifier();
+});
+
+// final mapNameListProvider = StateProvider<List<String>>((ref) {
+//   return ['1', '2', '3', 'test_map', 'harbor_map'];
+// });
+
 
 final ros2ControlProvider =
     StateNotifierProvider<ROS2ControlNotifier, String?>((ref) {
@@ -84,6 +101,7 @@ class ROS2NetworkCommsNotifier extends StateNotifier<ROS2NetworkComms?> {
         initializeClient(selectedServer.address);
         streamLogs();
         getLaunchfileList();
+        getMapNames();  
         lastServerAddress = selectedServer.address;
       }
     });
@@ -103,6 +121,10 @@ class ROS2NetworkCommsNotifier extends StateNotifier<ROS2NetworkComms?> {
 
   void getLaunchfileList() {
     state?.getLaunchfileList();
+  }
+
+  void getMapNames() {
+    state?.getMapNames();
   }
 
   Future<void> _createClient(String serverAddress) async {
@@ -185,9 +207,12 @@ class ROS2NetworkComms {
     }
   }
 
-  Future<void> startLaunch(String launchFile) async {
+  Future<void> startLaunch(String launchFile, String? argument) async {
     final request = LaunchRequest()..launchFile = launchFile;
     request.package = 'sailbot';
+    if (argument != null && argument.isNotEmpty) {
+      request.arguments = argument;
+    }
     try {
       final response = await ros2ControlClient!.start(request);
       ref.read(ros2ControlProvider.notifier).update(response.message);
@@ -232,6 +257,16 @@ class ROS2NetworkComms {
       dev.log("launchfile names: ${response.names}", name: 'ros2_network');
     } catch (e) {
       dev.log("Failed to get launchfile names: $e", name: 'ros2_network');
+    }
+  }
+
+  getMapNames() async {
+    try {
+      final response = await ros2ControlClient!.getMapNames(Empty()); 
+      ref.read(mapNameListProvider.notifier).update(response.names);
+      dev.log("map names: ${response.names}", name: 'ros2_network');
+    } catch (e) {
+      dev.log("Failed to get map names: $e", name: 'ros2_network');
     }
   }
 

@@ -23,7 +23,7 @@ class MapPositionState {
 
 class MapPositionNotifier extends StateNotifier<MapPositionState> {
   MapPositionNotifier()
-      : super(MapPositionState(center: const LatLng(42.8489, -70.9829), zoom: 15));
+      : super(MapPositionState(center: const LatLng(42.274460, -71.759992), zoom: 15));
 
   void updatePosition(LatLng center, double zoom) {
     state = state.copyWith(center: center, zoom: zoom);

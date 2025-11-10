@@ -12,29 +12,44 @@ class HeadingSpeedDisplay extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final boatState = ref.watch(boatStateProvider);
-    return Row(
+    return Column(  
+      mainAxisSize: MainAxisSize.min,
       children: <Widget>[
-        Column(
-          mainAxisSize: MainAxisSize.min,
-          children: <Widget>[
-            SizedBox(
-                width: min(displayWidth(context) / 3, 150),
-                height: min(displayWidth(context) / 3, 150),
-                child: buildCompassGauge(boatState.currentHeading)),
-            const Text("heading"),
-          ],
-        ),
-        Column(
-          mainAxisSize: MainAxisSize.min,
-          children: <Widget>[
-            SizedBox(
-                width: min(displayWidth(context) / 3, 150),
-                height: min(displayWidth(context) / 3, 150),
-                child: buildSpeedGauge(boatState.speedKnots)),
-            const Text("Speed"),
-          ],
-        ),
+        const Text("Heading"), 
+        SizedBox(
+            width: min(displayWidth(context) / 3, 150),
+            height: min(displayWidth(context) / 3, 150),
+            child: buildCompassGauge(boatState.currentHeading)),
+        const Text("Speed"),
+        SizedBox(
+            width: min(displayWidth(context) / 3, 150),
+            height: min(displayWidth(context) / 3, 150),
+            child: buildSpeedGauge(boatState.speedKnots)),
       ],
     );
+    // Row(
+    //   children: <Widget>[
+    //     Column(
+    //       mainAxisSize: MainAxisSize.min,
+    //       children: <Widget>[
+    //         SizedBox(
+    //             width: min(displayWidth(context) / 3, 150),
+    //             height: min(displayWidth(context) / 3, 150),
+    //             child: buildCompassGauge(boatState.currentHeading)),
+    //         const Text("heading"),
+    //       ],
+    //     ),
+    //     Column(
+    //       mainAxisSize: MainAxisSize.min,
+    //       children: <Widget>[
+    //         SizedBox(
+    //             width: min(displayWidth(context) / 3, 150),
+    //             height: min(displayWidth(context) / 3, 150),
+    //             child: buildSpeedGauge(boatState.speedKnots)),
+    //         const Text("Speed"),
+    //       ],
+    //     ),
+    //   ],
+    // );
   }
 }

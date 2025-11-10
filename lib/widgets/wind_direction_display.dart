@@ -17,14 +17,33 @@ class WindDirectionDisplay extends ConsumerWidget {
       children: <Widget>[
         const Text("True wind"),
         SizedBox(
-            width: min(displayHeight(context) / 3, 150),
-            height: min(displayHeight(context) / 3, 150),
+            width: min(displayWidth(context) / 3, 150),
+            height: min(displayWidth(context) / 3, 150),
             child: buildCompassGauge(boatState.trueWind.direction)),
+
+        Text(
+          "${boatState.trueWind.speed.toStringAsFixed(1)} knots",
+          style: const TextStyle(
+            fontSize: 14,
+            fontWeight: FontWeight.bold,
+            color: Colors.black,
+          ),
+        ),
+        const SizedBox(height: 10),
+        
         const Text("Apparent wind"),
         SizedBox(
-            width: min(displayHeight(context) / 3, 150),
-            height: min(displayHeight(context) / 3, 150),
+            width: min(displayWidth(context) / 3, 150),
+            height: min(displayWidth(context) / 3, 150),
             child: buildApparentHeadingGague(boatState.apparentWind.direction)),
+        Text(
+          "${boatState.apparentWind.speed.toStringAsFixed(1)} knots",
+          style: const TextStyle(
+            fontSize: 14,
+            fontWeight: FontWeight.bold,
+            color: Colors.black,
+          ),
+        ),
       ],
     );
   }

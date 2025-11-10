@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:sailbot_telemetry_flutter/widgets/autonomous_mode_selector.dart';
@@ -40,10 +42,15 @@ class RudderControlWidget extends ConsumerWidget {
   }
 
   _updateRudderAngle(double angle) {
+    // print(angle);
     _networkComms?.setRudderAngle(angle);
   }
 
   setInteractive(bool interactive){
     _controller.setInteractive(interactive);
+  }
+  
+  void setAngle(double radians) {
+    _controller.setAngle(radians);
   }
 }
