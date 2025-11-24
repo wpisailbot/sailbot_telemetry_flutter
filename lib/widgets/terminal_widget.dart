@@ -13,7 +13,7 @@ class TerminalWidget extends ConsumerWidget {
       padding: const EdgeInsets.all(8.0),
       color: Colors.black,
       child: ListView.builder(
-        reverse: true, // To scroll to the bottom automatically
+        reverse: false, // To scroll to the bottom automatically
         itemCount: logs.length,
         itemBuilder: (context, index) {
           final log = logs[logs.length - 1 - index]; // Reverse the order

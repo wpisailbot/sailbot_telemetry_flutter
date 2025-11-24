@@ -211,7 +211,7 @@ class ROS2NetworkComms {
     final request = LaunchRequest()..launchFile = launchFile;
     request.package = 'sailbot';
     if (argument != null && argument.isNotEmpty) {
-      request.arguments = argument;
+      request.arguments = "map_name=$argument";
     }
     try {
       final response = await ros2ControlClient!.start(request);
@@ -262,7 +262,14 @@ class ROS2NetworkComms {
 
   getMapNames() async {
     try {
+      final fakeMapNames = [
+        'webster_highres:42.02697586726279:-71.86015011725914:42.04778634200546:-71.830713667753.png',
+        'attitash_highres:42.842070:-70.992272:42.857226:-70.971131.png',
+        'quinsigamond:42.274460:-71.759992:42.280359:-71.752954.png',
+        'lab:42.272388:-71.807720:42.274761:-71.803917.png',
+      ];
       final response = await ros2ControlClient!.getMapNames(Empty()); 
+      // response.names = real grpc call, fakeMapNames = test data
       ref.read(mapNameListProvider.notifier).update(response.names);
       dev.log("map names: ${response.names}", name: 'ros2_network');
     } catch (e) {

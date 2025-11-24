@@ -26,6 +26,7 @@ class MapPositionNotifier extends StateNotifier<MapPositionState> {
       : super(MapPositionState(center: const LatLng(42.274460, -71.759992), zoom: 15));
 
   void updatePosition(LatLng center, double zoom) {
+    // print("Updating map position to center: $center, zoom: $zoom");
     state = state.copyWith(center: center, zoom: zoom);
   }
 }
@@ -290,6 +291,18 @@ class _MapViewState extends ConsumerState<MapView> {
   @override
   Widget build(BuildContext context) {
     final mapPosition = ref.watch(mapPositionProvider);
+
+    ref.listen(mapPositionProvider, (previous, next) {
+    if (previous != null && 
+        (previous.center != next.center || previous.zoom != next.zoom)) {
+      // print("Provider changed - moving map controller to: ${next.center}");
+      
+      // THIS is what actually moves the map!
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        _mapController.move(next.center, next.zoom);
+      });
+    }
+  });
 
     return FlutterMap(
       mapController: _mapController,
