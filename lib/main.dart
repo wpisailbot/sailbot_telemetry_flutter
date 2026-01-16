@@ -215,7 +215,7 @@ class _MyAppState extends ConsumerState<MyApp> {
                     borderRadius: BorderRadius.circular(10),
                     border: Border.all(color: Colors.grey),
                   ),
-                  child: const TrimStateWidget(),  // ← Keep only this, remove Column/Divider/AutonomousModeSelector
+                  child: const TrimStateWidget(),  // Keep only this, remove Column/Divider/AutonomousModeSelector
                 ),
               ),
             // Align(
@@ -263,29 +263,43 @@ class _MyAppState extends ConsumerState<MyApp> {
                 child: rudderControlWidget,
               ),
             ),
-            Transform.translate(
-              offset: Offset(-displayWidth(context) / 9, -40),
-              child: Align(
-                alignment: Alignment.bottomRight,
-                // centerPoint:
-                //     Offset(displayWidth(context) / 2, displayHeight(context) / 2),
-                child: trimTabControlWidget,
-              ),
+            Consumer(
+              builder: (context, ref, child) {
+                final isMapVisible = ref.watch(cameraToggleProvider);
+                if (!isMapVisible) {
+                  return const SizedBox.shrink();
+                }
+                
+                return Transform.translate(
+                  offset: Offset(-displayWidth(context) / 9, -40),
+                  child: Align(
+                    alignment: Alignment.bottomRight,
+                    child: trimTabControlWidget,
+                  ),
+                );
+              },
             ),
-            Transform.translate(
-                offset: Offset(displayWidth(context) / 2 - 180,
-                    displayHeight(context) - 240),
-                child: SizedBox(
-                  height: 70,
-                  width: 90,
-                  child: FloatingActionButton(
-                      onPressed: () {
-                        _networkComms?.requestTack();
-                      },
-                      child: const Text("Tack")),
-                  // const SizedBox(
-                  //     height: 40, width: 250, child: BallastSlider())
-                )),
+            Consumer(
+              builder: (context, ref, child) {
+                final isMapVisible = ref.watch(cameraToggleProvider);
+                if (!isMapVisible) {
+                  return const SizedBox.shrink();
+                }
+                
+                return Transform.translate(
+                    offset: Offset(displayWidth(context) / 2 - 180,
+                        displayHeight(context) - 240),
+                    child: SizedBox(
+                      height: 70,
+                      width: 90,
+                      child: FloatingActionButton(
+                          onPressed: () {
+                            _networkComms?.requestTack();
+                          },
+                          child: const Text("Tack")),
+                    ));
+              },
+            ),
             PathButtons(),
           ])),
     );

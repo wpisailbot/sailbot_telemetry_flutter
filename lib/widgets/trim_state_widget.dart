@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 
 import 'package:sailbot_telemetry_flutter/utils/network_comms.dart';
 import 'package:sailbot_telemetry_flutter/submodules/telemetry_messages/dart/boat_state.pb.dart';
+import 'package:sailbot_telemetry_flutter/widgets/map_camera_widget.dart';
 
 class TrimStateWidget extends ConsumerWidget {
   const TrimStateWidget({super.key});
@@ -10,6 +11,10 @@ class TrimStateWidget extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final boatState = ref.watch(boatStateProvider);
+    final isMapVisible = ref.watch(cameraToggleProvider);
+    if (!isMapVisible) {
+      return const SizedBox.shrink();
+    }
     String currentTrimState = '';
     switch (boatState.currentTrimState) {
       case TrimState.TRIM_STATE_MIN_LIFT:

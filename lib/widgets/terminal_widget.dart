@@ -13,16 +13,17 @@ class TerminalWidget extends ConsumerWidget {
       padding: const EdgeInsets.all(8.0),
       color: Colors.black,
       child: ListView.builder(
-        reverse: false, // To scroll to the bottom automatically
+        reverse: true, // To scroll to the bottom automatically
         itemCount: logs.length,
         itemBuilder: (context, index) {
           final log = logs[logs.length - 1 - index]; // Reverse the order
           final isError = log.contains('[ERROR]') || log.contains('[FATAL]');
           final isWarn = log.contains('[WARN]');
-          return Text(
+          return SelectableText(
             log,
             style: TextStyle(
               color: isError ? Colors.red : isWarn? Colors.yellow: Colors.green,
+              fontFamily: 'Courier',
             ),
           );
         },

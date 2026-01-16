@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:sailbot_telemetry_flutter/widgets/autonomous_mode_selector.dart';
 import 'package:sailbot_telemetry_flutter/utils/network_comms.dart';
 import 'package:sailbot_telemetry_flutter/widgets/draggable_circle.dart';
+import 'package:sailbot_telemetry_flutter/widgets/map_camera_widget.dart';
 import 'dart:math';
 import 'dart:io' show Platform;
 
@@ -24,6 +25,10 @@ class RudderControlWidget extends ConsumerWidget {
     );
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final isMapVisible = ref.watch(cameraToggleProvider);
+    if (!isMapVisible) {
+      return const SizedBox.shrink();
+    }
     _controller.callback = _updateRudderAngle;
     final String autonomousMode = ref.watch(autonomousModeProvider);
     final boatState = ref.watch(boatStateProvider);

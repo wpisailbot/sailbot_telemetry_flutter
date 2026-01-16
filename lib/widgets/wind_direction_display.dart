@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:sailbot_telemetry_flutter/utils/utils.dart';
 import 'package:sailbot_telemetry_flutter/widgets/speed_compass_gauges.dart';
 import 'package:sailbot_telemetry_flutter/utils/network_comms.dart';
+import 'package:sailbot_telemetry_flutter/widgets/map_camera_widget.dart';
 
 import 'dart:math';
 
@@ -11,7 +12,11 @@ class WindDirectionDisplay extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final isMapVisible = ref.watch(cameraToggleProvider);
     final boatState = ref.watch(boatStateProvider);
+    if (!isMapVisible) {
+      return const SizedBox.shrink();
+    }
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: <Widget>[
