@@ -41,6 +41,8 @@ dependencies:
   flutter_launcher_icons: ^0.13.1
   web_socket_channel: ^2.4.0
   grpc: ^3.2.4
+  flutter_cube: ^0.1.1
+
   gamepads:
     path: ../gamepads/packages/gamepads
   win32_gamepad: ^1.0.7
@@ -113,3 +115,7 @@ flutter:
     - assets/arrow.png
     - assets/boat.png
     - assets/buoy.png
+    - assets/shark/
+    - assets/rudder/
+    - assets/trimtab_rods/
+    - assets/trimtab/

@@ -11,6 +11,7 @@ import 'package:sailbot_telemetry_flutter/widgets/video_source_select.dart';
 import 'dart:developer' as dev; //log() conflicts with math
 
 import 'package:sailbot_telemetry_flutter/utils/github_helper.dart' as gh;
+import 'package:sailbot_telemetry_flutter/widgets/model_3d_widget.dart';
 
 final boatStateProvider =
     StateNotifierProvider<BoatStateNotifier, BoatState>((ref) {
@@ -315,6 +316,7 @@ class NetworkComms {
   }
 
   setRudderAngle(double angle) {
+    ref.read(rudderAngleProvider.notifier).state = angle;
     RudderCommand command = RudderCommand();
     command.rudderControlValue = angle;
     dev.log("sending rudder command", name: "network");
@@ -331,6 +333,7 @@ class NetworkComms {
   }
 
   setTrimtabAngle(double angle) {
+    ref.read(trimtabAngleProvider.notifier).state = angle;
     TrimTabCommand command = TrimTabCommand();
     command.trimtabControlValue = angle;
     // print(command);
