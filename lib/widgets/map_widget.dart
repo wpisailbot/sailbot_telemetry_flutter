@@ -330,7 +330,7 @@ class _MapViewState extends ConsumerState<MapView> {
           ref
               .read(mapPositionProvider.notifier)
               .updatePosition(position.center!, position.zoom!);
-          ref.read(mapStateProvider.notifier).resetTapDetails();
+          // ref.read(mapStateProvider.notifier).resetTapDetails();
         },
       ),
       children: [

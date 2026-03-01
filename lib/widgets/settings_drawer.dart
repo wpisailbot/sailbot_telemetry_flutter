@@ -18,6 +18,9 @@ final rudderOBProvider = StateProvider<String>((ref) => '50000.0');
 final rudderStepProvider = StateProvider<String>((ref) => '0.08');
 final trimStepProvider = StateProvider<String>((ref) => '0.08');
 
+final dragLayoutProvider = StateProvider<bool>((ref) => false);
+final resetLayoutTriggerProvider = StateProvider<int>((ref) => 0);
+
 class SettingsDrawer extends ConsumerWidget {
   const SettingsDrawer({super.key});
 
@@ -33,6 +36,8 @@ class SettingsDrawer extends ConsumerWidget {
 
     final lastRudderStep = ref.watch(rudderStepProvider);
     final lastTrimStep = ref.watch(trimStepProvider);
+
+    final dragLayoutEnabled = ref.watch(dragLayoutProvider);
 
     return Drawer(
       child: ListView(
@@ -133,6 +138,46 @@ class SettingsDrawer extends ConsumerWidget {
           const ListTile(
             title: Text("View Mode"),
             subtitle: MapCameraToggle(), 
+          ),
+
+          SwitchListTile(
+            title: const Text("Enable layout drag"),
+            value: dragLayoutEnabled,
+            onChanged: (value) {
+              ref.read(dragLayoutProvider.notifier).state = value;
+            },
+          ),
+
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16.0),
+            child: ElevatedButton(
+              onPressed: () async {
+                final confirmed = await showDialog<bool>(
+                  context: context,
+                  builder: (context) {
+                    return AlertDialog(
+                      title: const Text("Reset layout?"),
+                      content: const Text("This will reset all widget positions."),
+                      actions: [
+                        TextButton(
+                          onPressed: () => Navigator.pop(context, false),
+                          child: const Text("Cancel"),
+                        ),
+                        ElevatedButton(
+                          onPressed: () => Navigator.pop(context, true),
+                          child: const Text("Reset"),
+                        ),
+                      ],
+                    );
+                  },
+                );
+
+                if (confirmed == true) {
+                  ref.read(resetLayoutTriggerProvider.notifier).state++;
+                }
+              },
+              child: const Text("Reset layout"),
+            ),
           ),
 
           const Divider(),

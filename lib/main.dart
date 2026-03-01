@@ -28,6 +28,8 @@ import 'package:gamepads/gamepads.dart';
 import 'dart:async';
 import 'package:sailbot_telemetry_flutter/utils/gamepad_normalizer.dart';
 import 'package:sailbot_telemetry_flutter/utils/input_controller.dart';
+import 'dart:convert';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'dart:developer' as dev;
 
@@ -57,6 +59,57 @@ class _MyAppState extends ConsumerState<MyApp> {
   NetworkComms? _networkComms;
   final GlobalKey<CircleDragWidgetState> _trimTabKey =GlobalKey<CircleDragWidgetState>();
   final FocusNode _rootFocus = FocusNode();
+
+  Offset _windDisplayOffset = Offset.zero;
+  Offset _headingDisplayOffset = Offset.zero;
+  Offset _trimTabOffset = Offset.zero;
+  Offset _rudderOffset = Offset.zero;
+  Offset _trimStateOffset = Offset.zero;
+  Offset _settingOffset = Offset.zero;
+  Offset _tackOffset = Offset.zero;
+
+  static const _layoutKey = 'layout_offsets_v1';
+
+  Future<void> _loadLayout() async {
+    final prefs = await SharedPreferences.getInstance();
+    final raw = prefs.getString(_layoutKey);
+    if (raw == null) return;
+
+    final data = jsonDecode(raw) as Map<String, dynamic>;
+    setState(() {
+      _windDisplayOffset = _decodeOffset(data['wind']);
+      _headingDisplayOffset = _decodeOffset(data['heading']);
+      _trimTabOffset = _decodeOffset(data['trim']);
+      _rudderOffset = _decodeOffset(data['rudder']);
+      _trimStateOffset = _decodeOffset(data['trimState']);
+      _settingOffset = _decodeOffset(data['setting']);
+      _tackOffset = _decodeOffset(data['tack']);
+    });
+  }
+
+  Future<void> _saveLayout() async {
+    final prefs = await SharedPreferences.getInstance();
+    final data = {
+      'wind': _encodeOffset(_windDisplayOffset),
+      'heading': _encodeOffset(_headingDisplayOffset),
+      'trim': _encodeOffset(_trimTabOffset),
+      'rudder': _encodeOffset(_rudderOffset),
+      'trimState': _encodeOffset(_trimStateOffset),
+      'setting': _encodeOffset(_settingOffset),
+      'tack': _encodeOffset(_tackOffset),
+    };
+    await prefs.setString(_layoutKey, jsonEncode(data));
+  }
+
+  Offset _decodeOffset(dynamic v) {
+    if (v == null) return Offset.zero;
+    return Offset((v['dx'] ?? 0).toDouble(), (v['dy'] ?? 0).toDouble());
+  }
+
+  Map<String, double> _encodeOffset(Offset o) => {'dx': o.dx, 'dy': o.dy};
+
+  
+
   late final RudderControlWidget _rudderControlWidget = RudderControlWidget();
   late final CircleDragWidget _trimTabControlWidget = CircleDragWidget(
   width: 150,
@@ -72,6 +125,8 @@ class _MyAppState extends ConsumerState<MyApp> {
   @override
   void initState() {
     super.initState();
+
+    _loadLayout(); // load saved layout offsets
 
     // Request focus once after first frame so the Flutter view is focused
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -103,6 +158,20 @@ class _MyAppState extends ConsumerState<MyApp> {
   @override
   Widget build(BuildContext context) {
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
+
+    ref.listen<int>(resetLayoutTriggerProvider, (_, __) {
+      setState(() {
+        _windDisplayOffset = Offset.zero;
+        _headingDisplayOffset = Offset.zero;
+        _trimTabOffset = Offset.zero;
+        _rudderOffset = Offset.zero;
+        _trimStateOffset = Offset.zero;
+        _settingOffset = Offset.zero;
+        _tackOffset = Offset.zero;
+      });
+      _saveLayout();
+    });
+
     ref.listen<AsyncValue<List<Server>>>(serverListProvider, (previous, next) {
       next.when(
         loading: () {},
@@ -129,6 +198,18 @@ class _MyAppState extends ConsumerState<MyApp> {
     final trimTabControlWidget = _trimTabControlWidget;
 
     final rudderControlWidget = _rudderControlWidget;
+
+    final dragEnabled = ref.watch(dragLayoutProvider);
+
+    if (dragEnabled) {
+      _trimTabControlWidget.setInteractive(false);
+      _rudderControlWidget.setInteractive(false);
+    } else{
+      _trimTabControlWidget.setInteractive(true);
+      _rudderControlWidget.setInteractive(true);
+    }
+  
+  
 
     ref.listen<String>(autonomousModeProvider, (_, selectedMode) {
       print(selectedMode);
@@ -194,53 +275,90 @@ class _MyAppState extends ConsumerState<MyApp> {
             //   child: MapCameraToggle(),
             // ),
             DrawerIconWidget(_scaffoldState),
-            AlignPositioned(
-                alignment: Alignment.centerLeft,
-                centerPoint: Offset(displayWidth(context), displayHeight(context) / 3.5),
-                child: const HeadingSpeedDisplay()),
-            AlignPositioned(
-                alignment: Alignment.centerRight,
-                centerPoint: Offset(0, displayHeight(context) / 3.5),
-                child: const WindDirectionDisplay()),
-            Align(
-                alignment: Alignment.topRight,
-                child: SettingsIconWidget(_scaffoldState)),
-            Align(
-                alignment: Alignment.topCenter,
-                child: Container(
-                  transform: Matrix4.translationValues(0, 0, 0),
-                  width: 150,
-                  decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(1),
-                    borderRadius: BorderRadius.circular(10),
-                    border: Border.all(color: Colors.grey),
-                  ),
-                  child: const TrimStateWidget(),  // Keep only this, remove Column/Divider/AutonomousModeSelector
+            // AlignPositioned(
+            //     alignment: Alignment.centerLeft,
+            //     centerPoint: Offset(displayWidth(context), displayHeight(context) / 3.5),
+            //     child: const HeadingSpeedDisplay()),
+            Transform.translate(
+              offset: _headingDisplayOffset,
+              child: GestureDetector(
+                onPanUpdate: dragEnabled  
+                    ? (details) {
+                        setState(() {
+                          _headingDisplayOffset += details.delta;
+                        });
+                      }
+                    : null,
+                onPanEnd: dragEnabled ? (_) => _saveLayout() : null,
+                child: AlignPositioned(
+                  alignment: Alignment.centerLeft,
+                  centerPoint: Offset(displayWidth(context), displayHeight(context) / 3.5),
+                  child: const HeadingSpeedDisplay()
                 ),
               ),
-            // Align(
-            //   alignment: Alignment.centerRight,
-            //   child: Container(
-            //     transform: Matrix4.translationValues(0, 120.0, 0),
-            //     width: 150,
-            //     decoration: BoxDecoration(
-            //       color: Colors.white.withOpacity(1),
-            //       borderRadius: BorderRadius.circular(10),
-            //       border: Border.all(color: Colors.grey),
-            //     ),
-            //     child:
-            //         Column(mainAxisSize: MainAxisSize.min, children: <Widget>[
-            //       const TrimStateWidget(),
-            //       const Divider(
-            //         color: Colors.grey,
-            //         thickness: 1,
-            //         indent: 5,
-            //         endIndent: 5,
-            //       ),
-            //       AutonomousModeSelector(),
-            //     ]),
-            //   ),
-            // ),
+            ),
+            
+            Transform.translate(
+              offset: _windDisplayOffset,
+              child: GestureDetector(
+                onPanUpdate: dragEnabled  
+                    ? (details) {
+                        setState(() {
+                          _windDisplayOffset += details.delta;
+                        });
+                      }
+                    : null,
+                onPanEnd: dragEnabled ? (_) => _saveLayout() : null,
+                child: AlignPositioned(
+                  alignment: Alignment.centerRight,
+                  centerPoint: Offset(0, displayHeight(context) / 3.5),
+                  child: const WindDirectionDisplay(),
+                ),
+              ),
+            ),
+            Transform.translate(
+              offset: _settingOffset,
+              child: GestureDetector(
+                onPanUpdate: dragEnabled
+                    ? (details) {
+                        setState(() {
+                          _settingOffset += details.delta;
+                        });
+                      }
+                    : null,
+                onPanEnd: dragEnabled ? (_) => _saveLayout() : null,
+                child: Align(
+                  alignment: Alignment.topRight,
+                  child: SettingsIconWidget(_scaffoldState)),
+              ),
+            ),
+            Transform.translate(
+              offset: _trimStateOffset,
+              child: GestureDetector(
+                onPanUpdate: dragEnabled
+                    ? (details) {
+                        setState(() {
+                          _trimStateOffset += details.delta;
+                        });
+                      }
+                    : null,
+                onPanEnd: dragEnabled ? (_) => _saveLayout() : null,
+                child: Align(
+                  alignment: Alignment.topCenter,
+                  child: Container(
+                    transform: Matrix4.translationValues(0, 0, 0),
+                    width: 150,
+                    decoration: BoxDecoration(
+                      color: Colors.white.withOpacity(1),
+                      borderRadius: BorderRadius.circular(10),
+                      border: Border.all(color: Colors.grey),
+                    ),
+                    child: const TrimStateWidget(), 
+                  ),
+                ),
+              ),
+            ),
+            
             const PathPoint(),
             Align(
               alignment: Alignment.centerRight,
@@ -255,12 +373,20 @@ class _MyAppState extends ConsumerState<MyApp> {
               ),
             ),
             Transform.translate(
-              offset: Offset(displayWidth(context) / 9, -40),
-              child: Align(
-                alignment: Alignment.bottomLeft,
-                // centerPoint:
-                //     Offset(displayWidth(context) / 2, displayHeight(context) / 2),
-                child: rudderControlWidget,
+              offset: Offset(displayWidth(context) / 9, -40) + _rudderOffset,
+              child: GestureDetector(
+                onPanUpdate: dragEnabled
+                    ? (details) {
+                        setState(() {
+                          _rudderOffset += details.delta;
+                        });
+                      }
+                    : null,
+                onPanEnd: dragEnabled ? (_) => _saveLayout() : null,
+                child: Align(
+                  alignment: Alignment.bottomLeft,
+                  child: rudderControlWidget,
+                ),
               ),
             ),
             Consumer(
@@ -271,10 +397,20 @@ class _MyAppState extends ConsumerState<MyApp> {
                 }
                 
                 return Transform.translate(
-                  offset: Offset(-displayWidth(context) / 9, -40),
-                  child: Align(
-                    alignment: Alignment.bottomRight,
-                    child: trimTabControlWidget,
+                  offset: Offset(-displayWidth(context) / 9, -40) + _trimTabOffset,
+                  child: GestureDetector(
+                    onPanUpdate: dragEnabled
+                        ? (details) {
+                            setState(() {
+                              _trimTabOffset += details.delta;
+                            });
+                          }
+                        : null,
+                    onPanEnd: dragEnabled ? (_) => _saveLayout() : null,
+                    child: Align(
+                      alignment: Alignment.bottomRight,
+                      child: trimTabControlWidget,
+                    ),
                   ),
                 );
               },
@@ -288,16 +424,28 @@ class _MyAppState extends ConsumerState<MyApp> {
                 
                 return Transform.translate(
                     offset: Offset(displayWidth(context) / 2 - 180,
-                        displayHeight(context) - 240),
-                    child: SizedBox(
-                      height: 70,
-                      width: 90,
-                      child: FloatingActionButton(
+                        displayHeight(context) - 240) + _tackOffset,
+                    child: GestureDetector(
+                      onPanUpdate: dragEnabled
+                          ? (details) {
+                              setState(() {
+                                _tackOffset += details.delta;
+                              });
+                            }
+                          : null,
+                      onPanEnd: dragEnabled ? (_) => _saveLayout() : null,
+                      child: SizedBox(
+                        height: 70,
+                        width: 90,
+                        child: FloatingActionButton(
                           onPressed: () {
                             _networkComms?.requestTack();
                           },
-                          child: const Text("Tack")),
-                    ));
+                          child: const Text("Tack"),
+                        ),
+                      ),
+                    ),
+                  );
               },
             ),
             PathButtons(),

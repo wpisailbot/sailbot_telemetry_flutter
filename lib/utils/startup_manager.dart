@@ -10,9 +10,19 @@ import 'package:sailbot_telemetry_flutter/utils/github_helper.dart' as gh;
 
 class LogNotifier extends StateNotifier<List<String>> {
   LogNotifier() : super([]);
+  
+  // Maximum number of log messages to keep
+  static const int maxLogMessages = 150;
 
   void addLog(String log) {
-    state = [...state, log];
+    final newState = [...state, log];
+    
+    // If we exceed the cap, remove the oldest messages
+    if (newState.length > maxLogMessages) {
+      state = newState.sublist(newState.length - maxLogMessages);
+    } else {
+      state = newState;
+    }
   }
 
   void clearLogs() {

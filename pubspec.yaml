@@ -42,6 +42,7 @@ dependencies:
   web_socket_channel: ^2.4.0
   grpc: ^3.2.4
   flutter_cube: ^0.1.1
+  shared_preferences: ^2.2.3
 
   gamepads:
     path: ../gamepads/packages/gamepads
