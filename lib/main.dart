@@ -14,6 +14,7 @@ import 'package:sailbot_telemetry_flutter/widgets/drawer_icon_widget.dart';
 import 'package:sailbot_telemetry_flutter/widgets/settings_icon_widget.dart';
 import 'package:sailbot_telemetry_flutter/widgets/draggable_circle.dart';
 import 'package:sailbot_telemetry_flutter/widgets/autonomous_mode_selector.dart';
+import 'package:sailbot_telemetry_flutter/widgets/rudder_state_widget.dart';
 import 'package:sailbot_telemetry_flutter/widgets/trim_state_widget.dart';
 import 'package:sailbot_telemetry_flutter/widgets/ballast_slider.dart';
 import 'package:sailbot_telemetry_flutter/widgets/path_point.dart';
@@ -65,6 +66,7 @@ class _MyAppState extends ConsumerState<MyApp> {
   Offset _trimTabOffset = Offset.zero;
   Offset _rudderOffset = Offset.zero;
   Offset _trimStateOffset = Offset.zero;
+  Offset _rudderStateOffset = Offset.zero; 
   Offset _settingOffset = Offset.zero;
   Offset _tackOffset = Offset.zero;
 
@@ -82,6 +84,7 @@ class _MyAppState extends ConsumerState<MyApp> {
       _trimTabOffset = _decodeOffset(data['trim']);
       _rudderOffset = _decodeOffset(data['rudder']);
       _trimStateOffset = _decodeOffset(data['trimState']);
+      _rudderStateOffset = _decodeOffset(data['rudderState']);
       _settingOffset = _decodeOffset(data['setting']);
       _tackOffset = _decodeOffset(data['tack']);
     });
@@ -95,6 +98,7 @@ class _MyAppState extends ConsumerState<MyApp> {
       'trim': _encodeOffset(_trimTabOffset),
       'rudder': _encodeOffset(_rudderOffset),
       'trimState': _encodeOffset(_trimStateOffset),
+      'rudderState': _encodeOffset(_rudderStateOffset), 
       'setting': _encodeOffset(_settingOffset),
       'tack': _encodeOffset(_tackOffset),
     };
@@ -166,6 +170,7 @@ class _MyAppState extends ConsumerState<MyApp> {
         _trimTabOffset = Offset.zero;
         _rudderOffset = Offset.zero;
         _trimStateOffset = Offset.zero;
+        _rudderStateOffset = Offset.zero; 
         _settingOffset = Offset.zero;
         _tackOffset = Offset.zero;
       });
@@ -354,6 +359,32 @@ class _MyAppState extends ConsumerState<MyApp> {
                       border: Border.all(color: Colors.grey),
                     ),
                     child: const TrimStateWidget(), 
+                  ),
+                ),
+              ),
+            ),
+            Transform.translate(
+              offset: _rudderStateOffset,
+              child: GestureDetector(
+                onPanUpdate: dragEnabled
+                    ? (details) {
+                        setState(() {
+                          _rudderStateOffset += details.delta;
+                        });
+                      }
+                    : null,
+                onPanEnd: dragEnabled ? (_) => _saveLayout() : null,
+                child: Align(
+                  alignment: Alignment.topCenter,
+                  child: Container(
+                    transform: Matrix4.translationValues(0, 45, 0), 
+                    width: 150,
+                    decoration: BoxDecoration(
+                      color: Colors.white.withOpacity(1),
+                      borderRadius: BorderRadius.circular(10),
+                      border: Border.all(color: Colors.grey),
+                    ),
+                    child: const RudderStateWidget(), 
                   ),
                 ),
               ),

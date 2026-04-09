@@ -115,6 +115,7 @@ class LaunchfileDropdown extends ConsumerWidget {
     return launchfileList == null
         ? const CircularProgressIndicator()
         : DropdownButton<String>(
+            isExpanded: true,
             value: selectedLaunchfile,
             hint: const Text('Select a launchfile'),
             onChanged: (String? newValue) {
@@ -141,6 +142,7 @@ class MapNameDropdown extends ConsumerWidget {
     return mapNameList.isEmpty
         ? const CircularProgressIndicator()
         : DropdownButton<String>(
+            isExpanded: true,
             value: selectedMapName,
             hint: const Text('Select a map'),
             onChanged: (String? newValue) {
@@ -177,13 +179,14 @@ class ROS2ControlButtons extends ConsumerWidget {
               onPressed: () {
                 ros2NetworkComms?.startLaunch(launchfile ?? "", mapName);
             }),
+            const SizedBox(width: 8),
             FloatingActionButton(
               child: const Icon(Icons.stop),
               onPressed: () {
                 ros2NetworkComms?.stopLaunch();
             }),
-            const Padding(padding: EdgeInsets.all(4.0)),
-            const LaunchfileDropdown(), 
+            const SizedBox(width: 8),
+            const Expanded(child: LaunchfileDropdown()), 
           ],
         ),
         const SizedBox(height: 8),  
