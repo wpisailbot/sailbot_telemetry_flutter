@@ -464,6 +464,48 @@ class NetworkComms {
       dev.log('caught error: ${error.toString()}');
     });
   }
+  setRudderHeadingErrorScale(double headingErrorScale) {
+    SetHeadingErrorScaleCommand command = SetHeadingErrorScaleCommand();
+    command.headingScale = headingErrorScale;
+    _setParameterServiceClient?.executeSetHeadingErrorScaleCommand(command).then(
+        (response) {
+      ControlExecutionStatus status = response.executionStatus;
+      dev.log("Set rudder heading error scale command returned with response: $status",
+          name: 'network');
+    }, onError: (error) {
+      dev.log('onError');
+    }).catchError((error) {
+      dev.log('caught error: ${error.toString()}');
+    });
+  }
+  setRudderRateOfChangeScale(double rocScale) {
+    SetRateOfChangeScaleCommand command = SetRateOfChangeScaleCommand();
+    command.roc = rocScale;
+    _setParameterServiceClient?.executeSetRateOfChangeScaleCommand(command).then(
+        (response) {
+      ControlExecutionStatus status = response.executionStatus;
+      dev.log("Set rudder rate of change scale command returned with response: $status",
+          name: 'network');
+    }, onError: (error) {
+      dev.log('onError');
+    }).catchError((error) {
+      dev.log('caught error: ${error.toString()}');
+    });
+  }
+  setRudderCTEScale(double cteScale) {
+    SetCrossTrackErrorScaleCommand command = SetCrossTrackErrorScaleCommand();
+    command.cte = cteScale;
+    _setParameterServiceClient?.executeSetCrossTrackErrorScaleCommand(command).then(
+        (response) {
+      ControlExecutionStatus status = response.executionStatus;
+      dev.log("Set rudder CTE scale command returned with response: $status",
+          name: 'network');
+    }, onError: (error) {
+      dev.log('onError');
+    }).catchError((error) {
+      dev.log('caught error: ${error.toString()}');
+    });
+  }
 
   setCVParameters(CVParameters parameters) {
     SetCVParametersCommand command =
@@ -491,6 +533,19 @@ class NetworkComms {
       dev.log(error);
     }).catchError((error) {
       dev.log('caught error: ${error.toString()}');
+    });
+  }
+
+  cycleDamperMode(Function(int) onModeChanged) {
+    CycleDamperModeCommand command = CycleDamperModeCommand();
+    _controlCommandServiceClient?.executeCycleDamperModeCommand(command).then((response) {
+      print("Cycled damper mode, new mode: ${response.currentMode}");
+      // Convert proto enum to int (0, 1, or 2) and pass it to callback
+      onModeChanged(response.currentMode.value);
+    }, onError: (error) {
+      print('onError: $error');
+    }).catchError((error) {
+      print('caught error: ${error.toString()}');
     });
   }
 }

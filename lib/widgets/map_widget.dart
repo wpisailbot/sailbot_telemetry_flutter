@@ -168,6 +168,7 @@ class BoatStateView extends ConsumerWidget {
     //path lines
     var boatPoints = boatState.currentPath.points;
     dev.log("Path has ${boatPoints.length} points");
+    print("Path has ${boatPoints.length} points");
     var points = <LatLng>[];
     // if (boatPoints.isNotEmpty) {
     //   points.add(_boatLatLng);

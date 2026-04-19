@@ -15,8 +15,14 @@ final vfForwardMagnitudeProvider = StateProvider<String>((ref) => '2.0');
 final rudderASProvider = StateProvider<String>((ref) => '0.05');
 final rudderOBProvider = StateProvider<String>((ref) => '50000.0');
 
+final rudderCTEProvider = StateProvider<String>((ref) => '1.0');
+final rudderHESProvider = StateProvider<String>((ref) => '1.0');
+final rudderROCProvider = StateProvider<String>((ref) => '1.0');
+
 final rudderStepProvider = StateProvider<String>((ref) => '0.08');
 final trimStepProvider = StateProvider<String>((ref) => '0.08');
+
+final damperModeProvider = StateProvider<int>((ref) => 0);
 
 final dragLayoutProvider = StateProvider<bool>((ref) => false);
 final resetLayoutTriggerProvider = StateProvider<int>((ref) => 0);
@@ -33,6 +39,10 @@ class SettingsDrawer extends ConsumerWidget {
     final lastVFForwardMagnitude = ref.watch(vfForwardMagnitudeProvider);
     final lastRudderKP = ref.watch(rudderASProvider);
     final lastRudderKD = ref.watch(rudderOBProvider);
+
+    final lastRudderCTE = ref.watch(rudderCTEProvider);
+    final lastRudderHES = ref.watch(rudderHESProvider);
+    final lastRudderROC = ref.watch(rudderROCProvider);
 
     final lastRudderStep = ref.watch(rudderStepProvider);
     final lastTrimStep = ref.watch(trimStepProvider);
@@ -84,6 +94,51 @@ class SettingsDrawer extends ConsumerWidget {
               onSubmitted: ((String value) {
                 ref.read(rudderOBProvider.notifier).state = value;
                 networkComms?.setRudderOvershootBias(double.parse(value));
+              }),
+            ),
+          ),
+          ListTile(
+            title: const Text("Rudder Heading error scale"),
+            subtitle: TextField(
+              keyboardType:
+                  const TextInputType.numberWithOptions(decimal: true),
+              decoration: InputDecoration(hintText: lastRudderHES),
+              inputFormatters: [
+                FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d*'))
+              ],
+              onSubmitted: ((String value) {
+                ref.read(rudderHESProvider.notifier).state = value;
+                networkComms?.setRudderHeadingErrorScale(double.parse(value));
+              }),
+            ),
+          ),
+          ListTile(
+            title: const Text("Rudder Rate of change scale"),
+            subtitle: TextField(
+              keyboardType:
+                  const TextInputType.numberWithOptions(decimal: true),
+              decoration: InputDecoration(hintText: lastRudderROC),
+              inputFormatters: [
+                FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d*'))
+              ],
+              onSubmitted: ((String value) {
+                ref.read(rudderROCProvider.notifier).state = value;
+                networkComms?.setRudderRateOfChangeScale(double.parse(value));
+              }),
+            ),
+          ),
+          ListTile(
+            title: const Text("Rudder CTE scale"),
+            subtitle: TextField(
+              keyboardType:
+                  const TextInputType.numberWithOptions(decimal: true),
+              decoration: InputDecoration(hintText: lastRudderCTE),
+              inputFormatters: [
+                FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d*'))
+              ],
+              onSubmitted: ((String value) {
+                ref.read(rudderCTEProvider.notifier).state = value;
+                networkComms?.setRudderCTEScale(double.parse(value));
               }),
             ),
           ),
@@ -147,7 +202,19 @@ class SettingsDrawer extends ConsumerWidget {
               ref.read(dragLayoutProvider.notifier).state = value;
             },
           ),
-
+          ListTile(
+            title: const Text("Damper Mode"),
+            subtitle: ElevatedButton(
+              onPressed: () {
+                networkComms?.cycleDamperMode((newMode) {
+                  print(newMode);
+                  ref.read(damperModeProvider.notifier).state = newMode;
+                });
+              },
+              child: Text(_getDamperModeText(ref.watch(damperModeProvider))),
+            ),
+          ),
+          const Divider(),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16.0),
             child: ElevatedButton(
@@ -210,3 +277,16 @@ class SettingsDrawer extends ConsumerWidget {
     }
   }
 }
+
+String _getDamperModeText(int mode) {
+    switch (mode) {
+      case 2:
+        return "Manual Off";
+      case 1:
+        return "Manual On";
+      case 0:
+        return "Auto";
+      default:
+        return "Unknown";
+    }
+  }
