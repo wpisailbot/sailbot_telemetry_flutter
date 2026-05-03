@@ -205,9 +205,16 @@ class SettingsDrawer extends ConsumerWidget {
           ListTile(
             title: const Text("Damper Mode"),
             subtitle: ElevatedButton(
-              onPressed: () {
-                networkComms?.cycleDamperMode((newMode) {
-                  print(newMode);
+              onPressed: () async {
+                // Send cycle command
+                networkComms?.cycleDamperMode();
+                
+                // Wait a bit for the mode to cycle on Jetson
+                await Future.delayed(const Duration(milliseconds: 150));
+                
+                // Get the new mode
+                networkComms?.getDamperMode((newMode) {
+                  dev.log("Received new damper mode: $newMode", name: 'ui');
                   ref.read(damperModeProvider.notifier).state = newMode;
                 });
               },

@@ -536,16 +536,28 @@ class NetworkComms {
     });
   }
 
-  cycleDamperMode(Function(int) onModeChanged) {
+  // Cycle damper mode (fire and forget)
+  void cycleDamperMode() {
     CycleDamperModeCommand command = CycleDamperModeCommand();
     _controlCommandServiceClient?.executeCycleDamperModeCommand(command).then((response) {
-      print("Cycled damper mode, new mode: ${response.currentMode}");
-      // Convert proto enum to int (0, 1, or 2) and pass it to callback
-      onModeChanged(response.currentMode.value);
+      dev.log("Damper mode cycle command sent", name: 'network');
     }, onError: (error) {
-      print('onError: $error');
+      dev.log('onError: $error', name: 'network');
     }).catchError((error) {
-      print('caught error: ${error.toString()}');
+      dev.log('caught error: ${error.toString()}', name: 'network');
+    });
+  }
+
+  // Get current damper mode
+  void getDamperMode(Function(int) onModeReceived) {
+    GetDamperModeCommand command = GetDamperModeCommand();
+    _controlCommandServiceClient?.getDamperMode(command).then((response) {
+      dev.log("Got damper mode: ${response.currentMode}", name: 'network');
+      onModeReceived(response.currentMode.value);
+    }, onError: (error) {
+      dev.log('onError: $error', name: 'network');
+    }).catchError((error) {
+      dev.log('caught error: ${error.toString()}', name: 'network');
     });
   }
 }
