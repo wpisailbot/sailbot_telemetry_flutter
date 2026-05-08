@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:sailbot_telemetry_flutter/submodules/telemetry_messages/dart/control.pbserver.dart';
 import 'package:sailbot_telemetry_flutter/utils/network_comms.dart';
 import 'package:sailbot_telemetry_flutter/utils/github_helper.dart';
 import 'package:sailbot_telemetry_flutter/widgets/cv_settings.dart';
@@ -8,6 +9,7 @@ import 'package:sailbot_telemetry_flutter/main.dart';
 import 'package:sailbot_telemetry_flutter/widgets/autonomous_mode_selector.dart';
 import 'package:sailbot_telemetry_flutter/widgets/trim_state_widget.dart';
 import 'package:sailbot_telemetry_flutter/widgets/map_camera_widget.dart';
+import 'package:sailbot_telemetry_flutter/submodules/telemetry_messages/dart/boat_state.pb.dart';
 
 import 'dart:developer' as dev;
 
@@ -22,7 +24,6 @@ final rudderROCProvider = StateProvider<String>((ref) => '1.0');
 final rudderStepProvider = StateProvider<String>((ref) => '0.08');
 final trimStepProvider = StateProvider<String>((ref) => '0.08');
 
-final damperModeProvider = StateProvider<int>((ref) => 0);
 
 final dragLayoutProvider = StateProvider<bool>((ref) => false);
 final resetLayoutTriggerProvider = StateProvider<int>((ref) => 0);
@@ -48,6 +49,8 @@ class SettingsDrawer extends ConsumerWidget {
     final lastTrimStep = ref.watch(trimStepProvider);
 
     final dragLayoutEnabled = ref.watch(dragLayoutProvider);
+
+    final boatState = ref.watch(boatStateProvider);
 
     return Drawer(
       child: ListView(
@@ -212,13 +215,8 @@ class SettingsDrawer extends ConsumerWidget {
                 // Wait a bit for the mode to cycle on Jetson
                 await Future.delayed(const Duration(milliseconds: 150));
                 
-                // Get the new mode
-                networkComms?.getDamperMode((newMode) {
-                  dev.log("Received new damper mode: $newMode", name: 'ui');
-                  ref.read(damperModeProvider.notifier).state = newMode;
-                });
               },
-              child: Text(_getDamperModeText(ref.watch(damperModeProvider))),
+              child: Text(_getDamperModeText(boatState.damperMode)),
             ),
           ),
           const Divider(),
@@ -285,13 +283,14 @@ class SettingsDrawer extends ConsumerWidget {
   }
 }
 
-String _getDamperModeText(int mode) {
+String _getDamperModeText(DamperMode mode) {
+    // print("Current damper mode: ${mode}");
     switch (mode) {
-      case 2:
+      case DamperMode.DAMPER_MODE_MANUAL_OFF:
         return "Manual Off";
-      case 1:
+      case DamperMode.DAMPER_MODE_MANUAL_ON:
         return "Manual On";
-      case 0:
+      case DamperMode.DAMPER_AUTO:
         return "Auto";
       default:
         return "Unknown";
