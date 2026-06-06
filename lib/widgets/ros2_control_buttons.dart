@@ -1,7 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter/material.dart';
-import 'package:sailbot_telemetry_flutter/utils/network_comms.dart';
-import 'package:sailbot_telemetry_flutter/utils/github_helper.dart';
 import 'package:sailbot_telemetry_flutter/utils/startup_manager.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:sailbot_telemetry_flutter/widgets/map_widget.dart';

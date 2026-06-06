@@ -1,7 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter/material.dart';
 
-import 'package:sailbot_telemetry_flutter/utils/network_comms.dart';
 
 final autonomousModeProvider = StateProvider<String>((ref) => 'NONE');
 

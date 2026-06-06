@@ -1,14 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:sailbot_telemetry_flutter/widgets/map_widget.dart';
-import 'package:sailbot_telemetry_flutter/widgets/camera_widget.dart';
 import 'package:sailbot_telemetry_flutter/utils/network_comms.dart';
 import 'package:sailbot_telemetry_flutter/widgets/map_camera_widget.dart';
 
 final videoSourceProvider = StateProvider<String>((ref) => 'COLOR');
 
 class VideoSourceSelect extends ConsumerWidget {
-  VideoSourceSelect({super.key});
+  const VideoSourceSelect({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

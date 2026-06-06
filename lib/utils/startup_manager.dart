@@ -1,12 +1,9 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'dart:async';
 import 'package:grpc/grpc.dart';
-import 'package:sailbot_telemetry_flutter/submodules/startup_messages/dart/startup.pb.dart';
 import 'package:sailbot_telemetry_flutter/submodules/startup_messages/dart/startup.pbgrpc.dart';
 import 'dart:developer' as dev;
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:sailbot_telemetry_flutter/utils/network_comms.dart';
-import 'package:sailbot_telemetry_flutter/utils/github_helper.dart' as gh;
 
 class LogNotifier extends StateNotifier<List<String>> {
   LogNotifier() : super([]);

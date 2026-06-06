@@ -7,11 +7,10 @@ import 'package:sailbot_telemetry_flutter/widgets/map_widget.dart';
 import 'package:sailbot_telemetry_flutter/submodules/telemetry_messages/dart/boat_state.pb.dart';
 import 'package:sailbot_telemetry_flutter/widgets/icons.dart';
 import 'package:sailbot_telemetry_flutter/widgets/map_camera_widget.dart';
-import 'dart:math';
 import 'dart:developer' as dev;
 
 class PathButtons extends ConsumerStatefulWidget {
-  PathButtons({Key? key}) : super(key: key);
+  const PathButtons({Key? key}) : super(key: key);
 
   @override
   _PathButtonsState createState() => _PathButtonsState();
@@ -22,7 +21,7 @@ class _PathButtonsState extends ConsumerState<PathButtons> {
   late TextEditingController lonController;
   FocusNode latFocusNode = FocusNode();
   FocusNode lonFocusNode = FocusNode();
-  LatLng latlng = LatLng(0, 0);
+  LatLng latlng = const LatLng(0, 0);
 
   @override
   void initState() {
@@ -175,7 +174,7 @@ class _PathButtonsState extends ConsumerState<PathButtons> {
   }
 
   void _addWaypoint(WaypointType type, LatLng? pos) {
-    dev.log("Adding waypoint: ${pos}");
+    dev.log("Adding waypoint: $pos");
     var tappedPoint = Waypoint();
     tappedPoint.type = type;
     var point = Point();

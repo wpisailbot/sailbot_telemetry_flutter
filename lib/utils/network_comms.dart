@@ -1,9 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'dart:async';
 import 'package:grpc/grpc.dart';
-import 'package:sailbot_telemetry_flutter/submodules/telemetry_messages/dart/boat_state.pb.dart';
 import 'package:sailbot_telemetry_flutter/submodules/telemetry_messages/dart/boat_state.pbgrpc.dart';
-import 'package:sailbot_telemetry_flutter/submodules/telemetry_messages/dart/boat_state.pbserver.dart';
 import 'package:sailbot_telemetry_flutter/submodules/telemetry_messages/dart/control.pbgrpc.dart';
 import 'package:sailbot_telemetry_flutter/submodules/telemetry_messages/dart/node_restart.pbgrpc.dart';
 import 'package:sailbot_telemetry_flutter/submodules/telemetry_messages/dart/video.pbgrpc.dart';
@@ -177,7 +175,7 @@ class NetworkComms {
     GetCVParametersRequest cvRequest = GetCVParametersRequest();
       _getCVParametersServiceClient?.getCVParameters(cvRequest).then(
         (response) {
-          dev.log("got cv response: ${response}");
+          dev.log("got cv response: $response");
           if(response.hasParameters()){
             ref.read(cvParametersProvider.notifier).update(response.parameters);
           } else {

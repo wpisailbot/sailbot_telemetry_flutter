@@ -1,10 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter/services.dart';
-import 'package:sailbot_telemetry_flutter/widgets/map_widget.dart';
-import 'package:sailbot_telemetry_flutter/widgets/camera_widget.dart';
 import 'package:sailbot_telemetry_flutter/utils/network_comms.dart';
-import 'package:sailbot_telemetry_flutter/widgets/map_camera_widget.dart';
 import 'package:sailbot_telemetry_flutter/submodules/telemetry_messages/dart/boat_state.pb.dart';
 import 'dart:developer' as dev;
 
@@ -115,10 +112,10 @@ class HSVSliders extends ConsumerWidget {
           child: Row(
             children: [
               const SizedBox(width: 25, child: Text("Dia", textAlign: TextAlign.center)),
-              Padding(padding: const EdgeInsets.symmetric(horizontal: 8.0)),
+              const Padding(padding: EdgeInsets.symmetric(horizontal: 8.0)),
               Expanded(
                 child: TextField(
-                  keyboardType: TextInputType.numberWithOptions(decimal: true),
+                  keyboardType: const TextInputType.numberWithOptions(decimal: true),
                   decoration: InputDecoration(
                   //border: OutlineInputBorder(),
                   //labelText: 'Diameter: $buoyDiameter',

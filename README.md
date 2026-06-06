@@ -19,3 +19,5 @@ Setup:
 The app will pull servers from servers.json in here: https://github.com/wpisailbot/sailbot_servers. You can select which server (sailbot controller) to connect to from in the app.
 
 Communication with Sailbot happens over gRPC (see lib/utils/network_comms.dart), using message formats defined here: https://github.com/wpisailbot/telemetry_messages
+
+To fix issues with gradle being outdated, change the version of gradle-wrapper.properties and settings.gradle

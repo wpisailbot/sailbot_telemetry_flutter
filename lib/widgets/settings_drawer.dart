@@ -1,17 +1,14 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:sailbot_telemetry_flutter/submodules/telemetry_messages/dart/control.pbserver.dart';
 import 'package:sailbot_telemetry_flutter/utils/network_comms.dart';
 import 'package:sailbot_telemetry_flutter/utils/github_helper.dart';
 import 'package:sailbot_telemetry_flutter/widgets/cv_settings.dart';
 import 'package:sailbot_telemetry_flutter/main.dart'; 
 import 'package:sailbot_telemetry_flutter/widgets/autonomous_mode_selector.dart';
-import 'package:sailbot_telemetry_flutter/widgets/trim_state_widget.dart';
 import 'package:sailbot_telemetry_flutter/widgets/map_camera_widget.dart';
 import 'package:sailbot_telemetry_flutter/submodules/telemetry_messages/dart/boat_state.pb.dart';
 
-import 'dart:developer' as dev;
 
 final vfForwardMagnitudeProvider = StateProvider<String>((ref) => '2.0');
 final rudderASProvider = StateProvider<String>((ref) => '0.05');
@@ -150,7 +147,7 @@ class SettingsDrawer extends ConsumerWidget {
             subtitle: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text("Current: ${lastRudderStep}"),
+                Text("Current: $lastRudderStep"),
                 Slider(
                   activeColor: const Color.fromARGB(255, 0, 100, 255),
                   value: double.tryParse(lastRudderStep) ?? 0.08,
@@ -171,7 +168,7 @@ class SettingsDrawer extends ConsumerWidget {
             subtitle: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text("Current: ${lastTrimStep}"),
+                Text("Current: $lastTrimStep"),
                 Slider(
                   activeColor: const Color.fromARGB(255, 0, 100, 255),
                   value: double.tryParse(lastTrimStep) ?? 0.08, 

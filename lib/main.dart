@@ -36,7 +36,7 @@ import 'dart:developer' as dev;
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  runApp(ProviderScope(child: MyApp()));
+  runApp(const ProviderScope(child: MyApp()));
 }
 
 final GlobalKey<ScaffoldState> _scaffoldState = GlobalKey<ScaffoldState>();
@@ -400,7 +400,7 @@ class _MyAppState extends ConsumerState<MyApp> {
                   borderRadius: BorderRadius.circular(10),
                   border: Border.all(color: Colors.grey),
                 ),
-                child: VideoSourceSelect(),
+                child: const VideoSourceSelect(),
               ),
             ),
             Transform.translate(
@@ -479,7 +479,7 @@ class _MyAppState extends ConsumerState<MyApp> {
                   );
               },
             ),
-            PathButtons(),
+            const PathButtons(),
           ])),
     );
   }

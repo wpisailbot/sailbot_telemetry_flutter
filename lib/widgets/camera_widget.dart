@@ -62,7 +62,7 @@ class CameraView extends ConsumerWidget {
     final imageState = ref.watch(imageProvider);
 
     if (imageState.isLoaded && imageState.image != null) {
-      return Container(
+      return SizedBox(
                       width: MediaQuery.of(context).size.width,
                       child: Image(
         image: imageState.image!,
