@@ -50,7 +50,7 @@ void centerMapOnSelectedMap(WidgetRef ref, String displayName) {
       final center = calculateMapCenter(selectedMap.northEast!, selectedMap.southWest!);
       
       print("Centering map on $center");
-      ref.read(mapPositionProvider.notifier).updatePosition(center, 15);
+      ref.read(mapPositionProvider.notifier).updatePosition(center, 13);
       
       dev.log("Centered map on ${selectedMap.displayName} at $center", name: 'map_control');
     }

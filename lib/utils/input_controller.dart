@@ -119,16 +119,16 @@ class InputController {
       // 4 = mode cycle
       // 5 = tack
 
-      if (canon.key == '7') {
+      if (canon.key == '6') {
         currentAction = canon.pressed ? InputAction.rudderLeft : InputAction.none;
       }
-      if (canon.key == '6') {
+      if (canon.key == '7') {
         currentAction = canon.pressed ? InputAction.rudderRight : InputAction.none;
       }
-      if (canon.key == '1' ) {
+      if (canon.key == '3' ) {
         currentAction = canon.pressed ? InputAction.trimtabRight : InputAction.none;
       }
-      if (canon.key == '3' ) {
+      if (canon.key == '1' ) {
           currentAction = canon.pressed ? InputAction.trimtabLeft : InputAction.none;
       }
 

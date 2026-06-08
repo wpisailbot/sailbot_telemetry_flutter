@@ -69,6 +69,7 @@ class _MyAppState extends ConsumerState<MyApp> {
   Offset _rudderStateOffset = Offset.zero; 
   Offset _settingOffset = Offset.zero;
   Offset _tackOffset = Offset.zero;
+  Offset _autoModeOffset = Offset.zero; 
 
   static const _layoutKey = 'layout_offsets_v1';
 
@@ -87,6 +88,7 @@ class _MyAppState extends ConsumerState<MyApp> {
       _rudderStateOffset = _decodeOffset(data['rudderState']);
       _settingOffset = _decodeOffset(data['setting']);
       _tackOffset = _decodeOffset(data['tack']);
+      _autoModeOffset = _decodeOffset(data['autoMode']);
     });
   }
 
@@ -101,6 +103,7 @@ class _MyAppState extends ConsumerState<MyApp> {
       'rudderState': _encodeOffset(_rudderStateOffset), 
       'setting': _encodeOffset(_settingOffset),
       'tack': _encodeOffset(_tackOffset),
+      'autoMode': _encodeOffset(_autoModeOffset),
     };
     await prefs.setString(_layoutKey, jsonEncode(data));
   }
@@ -173,6 +176,7 @@ class _MyAppState extends ConsumerState<MyApp> {
         _rudderStateOffset = Offset.zero; 
         _settingOffset = Offset.zero;
         _tackOffset = Offset.zero;
+        _autoModeOffset = Offset.zero; 
       });
       _saveLayout();
     });
@@ -203,6 +207,17 @@ class _MyAppState extends ConsumerState<MyApp> {
     final trimTabControlWidget = _trimTabControlWidget;
 
     final rudderControlWidget = _rudderControlWidget;
+
+    final String autonomousMode = ref.watch(autonomousModeProvider);
+    final boatState = ref.watch(boatStateProvider);
+    
+    if (autonomousMode == 'TRIMTAB' || autonomousMode == 'FULL') {
+      _trimTabControlWidget.setAngle(boatState.trimTabPosition * (pi / 180) * -1);
+    } else {
+      if (autonomousMode == 'NONE' && _lastAutoMode != 'NONE') {
+        _trimTabControlWidget.setAngle(0);
+      }
+    }
 
     final dragEnabled = ref.watch(dragLayoutProvider);
 
@@ -479,10 +494,44 @@ class _MyAppState extends ConsumerState<MyApp> {
                   );
               },
             ),
+            Consumer(
+              builder: (context, ref, child) {
+                final isMapVisible = ref.watch(cameraToggleProvider);
+                if (!isMapVisible) {
+                  return const SizedBox.shrink();
+                }
+                
+                return Transform.translate(
+                  offset: Offset(displayWidth(context) / 2 - 180,
+                      displayHeight(context) - 320) + _autoModeOffset,  // Above Tack button
+                  child: GestureDetector(
+                    onPanUpdate: dragEnabled
+                        ? (details) {
+                            setState(() {
+                              _autoModeOffset += details.delta;
+                            });
+                          }
+                        : null,
+                    onPanEnd: dragEnabled ? (_) => _saveLayout() : null,
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(10),
+                        border: Border.all(color: Colors.grey),
+                      ),
+                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                      child: AutonomousModeSelector(),
+                    ),
+                  ),
+                );
+              },
+            ),
             PathButtons(),
           ])),
     );
   }
+
+  String _lastAutoMode = 'NONE';
 
   _updateTrimtabAngle(double angle) {
     _trimTabControlWidget.setAngle(angle);
