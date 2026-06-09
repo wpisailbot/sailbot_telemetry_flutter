@@ -91,6 +91,10 @@ class BoatStateView extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final LatLng p1 = LatLng(42.469667, -76.503983);
+    final LatLng p2 = LatLng(42.469600, -76.504417);
+    final LatLng p3 = LatLng(42.469267, -76.504383);
+    final LatLng p4 = LatLng(42.469283, -76.504000);
     final boatState = ref.watch(boatStateProvider);
 
     // Generate markers and polylines based on the boat state
@@ -135,6 +139,19 @@ class BoatStateView extends ConsumerWidget {
           Icons.star_border_purple500_rounded,
           color: Colors.red,
         )));
+      markers.add(Marker(
+          point: p1,
+          child: const Icon(Icons.star, color: Colors.black)));
+      markers.add(Marker(
+          point: p2,
+          child: const Icon(Icons.star, color: Colors.black)));
+      markers.add(Marker(
+          point: p3,
+          child: const Icon(Icons.star, color: Colors.black)));
+      markers.add(Marker(
+          point: p4,
+          child: const Icon(Icons.star, color: Colors.black)));
+      
     if (boatState.hasTargetHeading) {
       markers.add(Marker(
           point: boatLatLng,
